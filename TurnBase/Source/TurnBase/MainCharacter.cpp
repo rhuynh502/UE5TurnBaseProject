@@ -3,6 +3,12 @@
 
 #include "MainCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
+#include "InputConfig.h"
+#include "UnitStats.h"
 
 
 // Sets default values
@@ -10,6 +16,14 @@ AMainCharacter::AMainCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
+	SpringArmComp->SetupAttachment(GetRootComponent());
+
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera Component"));
+	CameraComp->SetupAttachment(SpringArmComp);
+
+	Stats = CreateDefaultSubobject<UUnitStats>(TEXT("Unit Stats"));
 
 }
 
@@ -32,28 +46,55 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("Forward", this, &AMainCharacter::GoForward);
-	PlayerInputComponent->BindAxis("Right", this, &AMainCharacter::GoRight);
-
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	
+	// Get player subsystem
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	// Clear input mappings
+	Subsystem->ClearAllMappings();
+	Subsystem->AddMappingContext(InputMapping, 0);
+	// Get enhanced input system
+	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	// Bind the actions
+	EnhancedInput->BindAction(InputActions->InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
+	EnhancedInput->BindAction(InputActions->InputLook, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
+	EnhancedInput->BindAction(InputActions->InputZoom, ETriggerEvent::Triggered, this, &AMainCharacter::Zoom);
 }
 
-void AMainCharacter::GoForward(float InputValue)
+void AMainCharacter::Move(const FInputActionValue& Value)
 {
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-	AddMovementInput(Direction, InputValue);
+	FVector2D MoveValue = Value.Get<FVector2D>();
+	FRotator MoveRotation(0, Controller->GetControlRotation().Yaw, 0);
+	// Forwards/Backwards
+	if (MoveValue.Y != 0)
+	{
+		FVector Direction = MoveRotation.RotateVector(FVector::ForwardVector);
+		AddMovementInput(Direction, MoveValue.Y);
+	}
+	// Left/Right
+	if (MoveValue.X != 0)
+	{
+		FVector Direction = MoveRotation.RotateVector(FVector::RightVector);
+		AddMovementInput(Direction, MoveValue.X);
+	}
 }
 
-void AMainCharacter::GoRight(float InputValue)
+void AMainCharacter::Look(const FInputActionValue& Value)
 {
-	FRotator Rotation = Controller->GetControlRotation();
-	FRotator YawRotation(0, Rotation.Yaw, 0);
+	FVector2D LookValue = Value.Get<FVector2D>();
 
-	FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	if (LookValue.X != 0.f)
+		AddControllerYawInput(LookValue.X);
 
-	AddMovementInput(Direction, InputValue);
+	if (LookValue.Y != 0.f)
+		AddControllerPitchInput(LookValue.Y);
+	
 }
+
+void AMainCharacter::Zoom(const FInputActionValue& Value)
+{
+	SpringArmComp->TargetArmLength = FMath::Clamp(SpringArmComp->TargetArmLength + Value.GetMagnitude() * ZoomSpeed, MinZoom, MaxZoom);
+
+}
+
 
