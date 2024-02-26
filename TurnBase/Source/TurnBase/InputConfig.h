@@ -23,4 +23,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UInputAction* InputZoom;
 	
+
+	UInputConfig() = default;
 };

@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "InputConfig.h"
+#include "InputAction.h"
 #include "UnitStats.h"
 
 
@@ -56,9 +57,9 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	// Get enhanced input system
 	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 	// Bind the actions
-	EnhancedInput->BindAction(InputActions->InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
-	EnhancedInput->BindAction(InputActions->InputLook, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
-	EnhancedInput->BindAction(InputActions->InputZoom, ETriggerEvent::Triggered, this, &AMainCharacter::Zoom);
+	EnhancedInput->BindAction(InputMove, ETriggerEvent::Triggered, this, &AMainCharacter::Move);
+	EnhancedInput->BindAction(InputLook, ETriggerEvent::Triggered, this, &AMainCharacter::Look);
+	EnhancedInput->BindAction(InputZoom, ETriggerEvent::Triggered, this, &AMainCharacter::Zoom);
 }
 
 void AMainCharacter::Move(const FInputActionValue& Value)

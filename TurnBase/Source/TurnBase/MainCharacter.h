@@ -41,16 +41,23 @@ protected:
 	// Enhanced Input Subsystem
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input System")
 	class UInputMappingContext* InputMapping;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input System")
-	class UInputConfig* InputActions;
+
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Zoom(const FInputActionValue& Value);
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input System")
 	float MaxZoom;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input System")
 	float MinZoom;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input System")
 	float ZoomSpeed = 1;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
+	class UInputAction* InputMove;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
+	UInputAction* InputLook;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Enhanced Input")
+	UInputAction* InputZoom;
 
 };
