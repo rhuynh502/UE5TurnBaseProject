@@ -4,28 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BaseWeapon.generated.h"
+#include "BaseProjectile.generated.h"
 
 UCLASS()
-class TURNBASE_API ABaseWeapon : public AActor
+class TURNBASE_API ABaseProjectile : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ABaseWeapon();
+	ABaseProjectile();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void Shoot(FVector Direction);
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float Damage;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float FireRate;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float LifeTime;
 };

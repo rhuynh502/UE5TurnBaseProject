@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BaseWeapon.h"
+#include "BaseProjectile.h"
 
 // Sets default values
-ABaseWeapon::ABaseWeapon()
+ABaseProjectile::ABaseProjectile()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,14 +12,16 @@ ABaseWeapon::ABaseWeapon()
 }
 
 // Called when the game starts or when spawned
-void ABaseWeapon::BeginPlay()
+void ABaseProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-void ABaseWeapon::Shoot(FVector Direction)
+// Called every frame
+void ABaseProjectile::Tick(float DeltaTime)
 {
-}
+	Super::Tick(DeltaTime);
 
+}
 
